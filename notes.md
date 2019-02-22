@@ -64,3 +64,21 @@
 
       let add a b = a + b
       List.map (add 10) [1 .. 10]    // (add 10) returns a function
+
+## Chapter 6
+
+* Can use pipelining operator (reverse, then take the head):
+
+      [1 .. 5] |> List.rev |> List.head
+
+* Functions to change first or second member of a tuple:
+
+      let mapFirst f (a, b) = (f(a), b)
+      let mapSecond f (a, b) = (a, f(b))
+
+  which can then be used like:
+
+      ("Prague", 1000) |> mapSecond ((+) 2000)
+
+* `Option.map` takes a function and an `option` and returns
+  an `option` with the function applied to the containing value.
