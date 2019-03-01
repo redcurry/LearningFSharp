@@ -1,0 +1,8 @@
+source "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
+source C:\Users\carlosja\Downloads
+source https://api.nuget.org/v3/index.json
+
+nuget FSharp.Core 4.5.2 prerelease restriction: >= net45
+nuget Humanizer 2.5.16 prerelease restriction: >= net45
+nuget System.ValueTuple 4.4.0 prerelease restriction: >= net45
+nuget WindowsAzure.Storage 9.3.3 prerelease restriction: >= net45
