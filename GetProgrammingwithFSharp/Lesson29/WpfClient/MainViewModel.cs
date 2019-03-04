@@ -25,7 +25,7 @@ namespace Capstone5
         {
             this.account = newAccount;
             this.LoadTransactions();
-            //this.Balance = (int)account.Balance;
+            this.Balance = (int)account.Balance;
         }
 
         private void LoadTransactions()

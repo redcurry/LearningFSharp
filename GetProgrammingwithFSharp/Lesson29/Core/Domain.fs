@@ -17,15 +17,16 @@ type RatedAccount =
         match this with
         | InCredit (CreditAccount account) -> getter account
         | Overdrawn account -> getter account
+    member this.Balance =
+        match this with
+        | InCredit (CreditAccount account) -> account.Balance
+        | Overdrawn account -> account.Balance
 
 module Transactions =
     /// Serializes a transaction
     let serialize transaction =
-        sprintf "%O***%s***%M" transaction.Timestamp transaction.Operation transaction.Amount
+        transaction |> Newtonsoft.Json.JsonConvert.SerializeObject
     
     /// Deserializes a transaction
     let deserialize (fileContents:string) =
-        let parts = fileContents.Split([|"***"|], StringSplitOptions.None)
-        { Timestamp = DateTime.Parse parts.[0]
-          Operation = parts.[1]
-          Amount = Decimal.Parse parts.[2] }
+        fileContents |> Newtonsoft.Json.JsonConvert.DeserializeObject<Transaction>
