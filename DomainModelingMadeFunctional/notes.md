@@ -154,3 +154,59 @@
 * Also for entities, disallow structural equality using the attributes
   ``[<NoEquality; NoComparison>]``, so entities will have to be compared
   by using their IDs explicitly
+
+## Chapter 6
+
+* To keep the domain clean, we should model both integrity
+  (e.g., value within proper range, order has at least one order line)
+  and consistency (e.g., total bill is equal to sum of orders)
+
+* For simple values, make the type constructor private, and instead
+  write a "create" function inside a module with the same name as the type:
+
+      type UnitQuantity = private UnitQuantity of int
+
+      module UnitQuantity =
+          let create qty =
+            ...
+
+  and write a "value" function to extract the value when pattern matching:
+
+      let value (UnitQuantity qty) = qty
+
+* Numeric values can be annotated with "units of measure"
+
+* Enforce lists to have at least one element by creating a NonEmptyList type:
+
+      type NonEmptyList<'a> =
+        { First: 'a
+          Rest:  'a list }
+
+* When modeling business rules, instead of
+
+      type CustomerEmail =
+        | Unverified of EmailAddress
+        | Verified   of EmailAddress
+
+  use a new type VerifiedEmailAddress that can only be created
+  by the e-mail verification service:
+
+      type CustomerEmail =
+        | Unverified of EmailAddress
+        | Verified   of VerifiedEmailAddress
+
+  so that it's impossible for anyone to create a Verified customer e-mail
+
+* Use aggregates to guarantee consistency, making use that if they are saved
+  to a database, all its contents are saved in the same transaction
+
+* When ensuring consistency between bounded contexts, it may be easier
+  to rely on "eventual consistency," i.e., the system will be consistent
+  some time in the future, not immediately (because that can take time)
+
+* For aggregates within a bounded context, eventual consistency can be used,
+  but there are cases where multiple aggregates must be involved in a single
+  transaction (e.g., money being transferred)
+
+* In some cases, the transaction can be refactored to be an entity itself;
+  and, in general, aggregates can be created freely for just one use case
