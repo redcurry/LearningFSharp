@@ -95,3 +95,22 @@
 * Instead of a layered architecture, use an onion architecture,
   where dependencies point inward (the domain is at the center
   and I/O is on the edges)
+
+## Chapter 4
+
+* If Person is defined as
+
+      type Person = { First:string; Last:string }
+
+  a Person value (aPerson) can be deconstructed with
+
+      let { First=first; Last=last } = aPerson
+
+  which in equivalent to
+
+      let first = aPerson.First
+      let last  = aPerson.Last
+
+* Use the "rec" keyword in a module to allow types defined first
+  to reference types defined later (less strict order of type definition),
+  or use the "and" keyword instead of "type" for the later types
