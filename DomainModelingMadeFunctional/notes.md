@@ -210,3 +210,32 @@
 
 * In some cases, the transaction can be refactored to be an entity itself;
   and, in general, aggregates can be created freely for just one use case
+
+## Chapter 7
+
+* The input to a workflow should always be a domain object,
+  typically a command (e.g., PlaceOrder)
+
+* A command can have common fields, so instead of defining them
+  in every command, use a separate type:
+
+      type Command<'data> =
+        { Data: 'data
+          Timestamp: DateTime
+          UserId: string }
+
+  so now a workflow-specific command can be defined as
+
+      type PlaceOrder = Command<UnvalidatedOrder>
+
+* When an object (e.g., Order) can be in different states,
+  this may be modeled by creating a type for each state,
+  then combining them into a choice type
+
+* When designing the domain model, it helps to think in terms of state machines
+
+* Implement each state with a type, storing any data necessary inside it,
+  and combine all the states into a single choice type
+
+* A function can take the choice type and decide how to move one state
+  to the next, depending on what the function does
