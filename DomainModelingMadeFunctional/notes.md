@@ -114,3 +114,43 @@
 * Use the "rec" keyword in a module to allow types defined first
   to reference types defined later (less strict order of type definition),
   or use the "and" keyword instead of "type" for the later types
+
+## Chapter 5
+
+* There may be types that appear similar (e.g., ShippingAddress and
+  BillingAddress), but you need to ask the domain expert if they are different,
+  because they may need to evolve independently
+
+* You can use "type Undefined = exn" to temporarily define domain types
+  as Undefined until you have a better idea of the actual type
+
+* For inputs (or outputs) one could use a tuple to contain several values,
+  but it's often better to create a named record type
+
+* Instead of a function signature like this:
+
+      type ValidateOrder =
+          UnvalidatedOrder -> Async<Result<ValidatedOrder,ValidationError list>>
+
+  define an alias for the return type:
+
+      type ValidationResponse<'a> = Async<Result<'a, ValidationError list>>
+
+  so that the new function signature is
+
+      type ValidatioOrder =
+          UnvalidatedOrder -> ValidationResponse<ValidatedOrder>
+
+* When modeling an entity that is a choice (e.g., UpaidInvoice and PaidInvoice),
+  put the ID inside the choice:
+
+      type UpaidInvoice = { InvoiceId : InvoiceId; ... }
+      type PaidInvoice  = { InvoiceId : InvoiceId; ... }
+
+      type Invoice =
+        | Unpaid of UnpaidInvoice
+        | Paid   of PaidInvoice
+
+* Also for entities, disallow structural equality using the attributes
+  ``[<NoEquality; NoComparison>]``, so entities will have to be compared
+  by using their IDs explicitly
