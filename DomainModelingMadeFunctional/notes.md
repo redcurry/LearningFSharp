@@ -63,3 +63,35 @@
 * Flesh out the steps and substeps of the workflow in pseudocode,
   including inputs and outputs (such as further events),
   in such detail that a domain expert can check its validity
+
+## Chapter 3
+
+* Using the "C4" architecture approach, a software architucture
+  is made up of containers (e.g., website, database),
+  which are made up of components, which are made up of classes
+  (or modules in functional programming)
+
+* The goal of a good architucture is to define the boundaries
+  between containers, components, and modules
+
+* How events are transmitted from one bounded context to another
+  depends on the architecture; it could be via asynchronous communication,
+  internal queue, or function calls
+
+* The data transmitted are DTOs that must be serialized or deserialized,
+  and validated so that the bounded context contains a valid domain
+
+* The ways in which contexts understand each other (like a contract) are:
+  shared kernel (contexts share some domain design), customer/supplier or
+  consumer-driven (downstream context defines the contract),
+  and conformist (upstream context defines the contract)
+
+* When communicating with a third-party component, use an anti-corruption layer,
+  which translates the external language to the bounded context language
+
+* The input to a workflow is always the data associated with a command,
+  and the output is always a set of events to communicate to other contexts
+
+* Instead of a layered architecture, use an onion architecture,
+  where dependencies point inward (the domain is at the center
+  and I/O is on the edges)
