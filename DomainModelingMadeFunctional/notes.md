@@ -242,3 +242,22 @@
 
 * For functions exposed as an API (i.e., to the public), you should hide the
   dependency to services; but for functions used internally, be explicit
+
+## Chapter 8
+
+* One way to make sure function signatures don't lie (e.g., throw exception)
+  is to restrict the input/output with a specialized type, e.g.,
+
+      type NonZeroInteger = private NonZeroInteger of int
+      // and define a smart constructor
+
+  so a ``twelveDividedBy`` function could not have signature
+  ``NonZeroInteger -> int`` instead of throwing an exception
+  if the input (an ``int``) is 0
+
+* Another way is to extend the output, such as making it an ``option``
+  for output cases that don't make sense
+
+* To build a complete application, you compose low-level functions
+  to create services, then compose services to create workflows,
+  and finally compose workflows in parallel to create the application
