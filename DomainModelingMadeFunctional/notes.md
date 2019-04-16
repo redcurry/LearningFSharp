@@ -239,3 +239,6 @@
 
 * A function can take the choice type and decide how to move one state
   to the next, depending on what the function does
+
+* For functions exposed as an API (i.e., to the public), you should hide the
+  dependency to services; but for functions used internally, be explicit
