@@ -261,3 +261,14 @@
 * To build a complete application, you compose low-level functions
   to create services, then compose services to create workflows,
   and finally compose workflows in parallel to create the application
+
+## Chapter 9
+
+* To help with the implementation, you can define a type for the function
+  signature, and define the function in terms of that new type,
+  using a lambda to assign the function; this helps with type errors
+  while implementing the function
+
+* Use partial application to build "baked-in" function, i.e., functions
+  with some parameters applied, so that the baked-in function only takes
+  a single paramater, making it easier to use in deeper functions
