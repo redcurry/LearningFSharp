@@ -272,3 +272,39 @@
 * Use partial application to build "baked-in" function, i.e., functions
   with some parameters applied, so that the baked-in function only takes
   a single paramater, making it easier to use in deeper functions
+
+## Chapter 10
+
+* Domain errors are expected as part of the business process,
+  so the business will have procedures in place to deal with such errors,
+  and the code should reflect those processes
+
+* Panics are errors that leave the system in an unknown state,
+  such as out of memory, divide by zero, or null reference
+
+* Infrastructure errors are expected as part of the architecture but not
+  part of the business, such as network timeout or authentication failure
+
+* Panics are best handled by raising an exception and catching it
+  in a top-level function (such as main)
+
+* Domain errors and some types of infrastructure errors are best handled
+  as part of the domain (e.g., using Result type)
+
+* Model errors as choice types, grouped by workflow
+
+* Create bind and map functions to convert functions to
+  two-track (Result input and output) functions, putting them
+  in a Result module, so they can be called as Result.bind, etc.
+
+* Sometimes a mapError function will be needed to pass different error types
+  (inside Result) to subsequent functions
+
+* When converting exceptions to Result, only catch those exceptions
+  relevant to the domain; others should be allowed to be caught somewhere else
+
+* In more complicated code (that can't just use pipeline),
+  you may need to use a "computation expression" and use let!
+
+* Use a special function to convert list of Result to a Result of list,
+  which makes more sense when doing error checking
