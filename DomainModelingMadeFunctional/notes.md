@@ -308,3 +308,10 @@
 
 * Use a special function to convert list of Result to a Result of list,
   which makes more sense when doing error checking
+
+## Chapter 11
+
+* First, convert the complex domain type to a DTO, then serialize that
+
+* During deserialization, domain-specific validation should be done
+  in the conversion from DTO to domain type
