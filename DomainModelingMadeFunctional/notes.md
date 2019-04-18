@@ -315,3 +315,17 @@
 
 * During deserialization, domain-specific validation should be done
   in the conversion from DTO to domain type
+
+* Wrap third-party libraries to make them suitable to use in a pipeline
+  and convert any exceptions into Result
+
+* Whether to let a third-party library throw exceptions or wrap them
+  in Result depends on whether you want to handle errors
+  as an expected situation or a "panic" that ends the workflow.
+
+* When serializing an Option type with a value type, like int,
+  you can use Nullable<int> as the DTO data type
+
+* Lists, sequences, and sets should be serialized to arrays
+
+* Tuples should not be common types in a domain
