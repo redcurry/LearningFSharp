@@ -329,3 +329,27 @@
 * Lists, sequences, and sets should be serialized to arrays
 
 * Tuples should not be common types in a domain
+
+## Chapter 12
+
+* Keep I/O functions dumb, and make all decisions in pure functions
+
+* The repository pattern is not used in functional programming;
+  instead, each needed fuction is passed to the function that uses it
+
+* CQS (command-query segregation) states that funtions that return data
+  should not have side effects, and functions that have side effects
+  should not return data
+
+* In CQRS (R = Responsibility), the model used in writing to the database
+  is different that the model used in querying the database, e.g.,
+
+      type SaveCustomer = WriteModel.Customer -> DbResult<Unit>
+      type LoadCustomer = CustomerId -> DbResult<ReadModel.Customer>
+
+  because querying often requires slightly different data,
+  such as additional data for performance reasons
+
+* CQRS can be "applied" to databases, where writing and reading occur
+  on separate databases (or views within a single database),
+  which allows for different read models (e.g., reporting, analysics)
