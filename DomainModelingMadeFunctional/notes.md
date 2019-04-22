@@ -353,3 +353,18 @@
 * CQRS can be "applied" to databases, where writing and reading occur
   on separate databases (or views within a single database),
   which allows for different read models (e.g., reporting, analysics)
+
+## Chapter 13
+
+* Separate categorization from business logic using active patterns
+
+* When business rules change, try to not modify existing code,
+  but add code to the workflow pipelines
+
+* Define a type for each function in the pipeline
+
+* In some cases, you may need a "factory" function, one that returns
+  some function or another, depending on some input
+
+* A workflow in one bounding context may need to communicate
+  with a separate bounding context
