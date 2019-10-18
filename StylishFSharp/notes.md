@@ -7,7 +7,7 @@ Generic discriminated union:
     type Shape<'T> =
     | Square of height:'T
     | Rectangle of height:'T * width:'T
-    | Circle of radius:'t
+    | Circle of radius:'T
 
 ### The `Option` Type
 
@@ -93,7 +93,7 @@ into a reference type that may be null.
 Start modeling using Discriminated Unions,
 but if it becomes too complicated, try option types.
 
-Don't expose options typen or DUs in APIs
+Don't expose option types or DUs in APIs
 that may be consuming in C#.
 
 ### Miscellaneous
