@@ -99,3 +99,27 @@ that may be consuming in C#.
 ### Miscellaneous
 
 `sprintf` returns a string, whereas `printf` prints it out.
+
+## Chapter 4: Collection Functions
+
+The `Seq` module works on the IEnumerable type.
+
+Most collection functions return a new collection,
+except `iter`, which does the desired operation but returns `unit`.
+
+Function `choose` applies the given function,
+and returns those that were `Some` (but doesn't return them in a `Some`).
+Function `pick` is similar but returns the first value that is `Some`.
+
+Function `sub` slices an array, similar to `array.[3..5]`.
+
+Function `truncate` is the same as Haskell's `init`.
+
+Function `init` creates a collection using the provided function.
+
+Function `partition` splits a collection into two depending
+on the given function, which returns `true` or `false`.
+
+### Miscellaneous
+
+An underscore in a large number (200\_000), helps as a visual aid.
