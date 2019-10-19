@@ -120,6 +120,13 @@ Function `init` creates a collection using the provided function.
 Function `partition` splits a collection into two depending
 on the given function, which returns `true` or `false`.
 
+Partial collection functions are those that may cause an exception
+(e.g., List.head on an empty list).
+Think carefully whether the given input could cause an exception.
+
+There are many collection functions that have `try` equivalents
+(return `None` when there's no return value, `Some` when there is.
+
 ### Miscellaneous
 
 An underscore in a large number (200\_000), helps as a visual aid.

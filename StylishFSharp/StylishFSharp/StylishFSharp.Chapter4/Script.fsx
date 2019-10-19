@@ -63,4 +63,56 @@ module Exercise04_04 =
 
     let housesNearSchools =
         getHouses 20
-        |> Array.map (fun h -> (h, trySchoolDistance h)) |> Array.filter (fun (h, d) -> d <> None)
+        |> Array.choose (fun h ->
+            match h |> trySchoolDistance with
+            | Some d -> Some (h, d)
+            | None -> None)
+
+module Exercise04_05 =
+
+    open Houses
+
+    getHouses 20
+    |> Array.filter (fun h -> h.Price > 100_000m)
+    |> Array.iter (fun h ->
+        printfn "Address: %s Price: %f" h.Address h.Price)
+
+module Exercise04_06 =
+
+    open Houses
+
+    getHouses 20
+    |> Array.filter (fun h -> h.Price > 100_000m)
+    |> Array.sortByDescending (fun h -> h.Price)
+    |> Array.iter (fun h ->
+        printfn "Address: %s Price: %f" h.Address h.Price)
+
+module Exercise04_07 =
+
+    open Houses
+
+    let houseAverage =
+        getHouses 20
+        |> Array.filter (fun h -> h.Price > 200_000m)
+        |> Array.averageBy (fun h -> h.Price)
+
+module Exercise04_08 =
+
+    open Houses
+
+    let exercise =
+        getHouses 20
+        |> Array.filter (fun h -> h.Price < 100_000m)
+        |> Array.pick (fun h ->
+            match trySchoolDistance h with
+            | Some d -> Some (h, d)
+            | None -> None)
+
+module Exercise04_09 =
+
+    open Houses
+
+    let exercise =
+        getHouses 20
+        |> Array.groupBy (fun h -> priceBand h.Price)
+        |> Array.map (fun (g, a) -> (g, a |> Array.sortBy (fun h -> h.Price)))
