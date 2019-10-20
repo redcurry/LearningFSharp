@@ -6,10 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
-    <None Include="Script.fsx" />
+    <None Include="Script_04.fsx" />
+    <None Include="Script_05.fsx" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>
