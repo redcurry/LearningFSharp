@@ -139,3 +139,23 @@ Instead of `|> Array.map (fun x -> doSomething x)`, just use
 ### Miscellaneous
 
 An underscore in a large number (`200\_000`), helps as a visual aid.
+
+## Chapter 5
+
+In F#, there's no `break` keyword to break out of a loop.
+
+`ResizeArray` in F# is equivalent to `System.Collections.Generic.List`.
+
+Use `Seq.cast<'a>` to convert a non-generic `IEnumerable`
+to the generic `IEnumerable<T>`.
+
+Use `seq { }` to return a sequence with what's inside.
+Use `yield` to return the next item in the sequence.
+Use `yield!` to return the elements of another sequence, one by one,
+which may use a recursive call to the function.
+
+Be aware of `Seq.isEmpty`.
+
+Use the *acc-elem* phrase to remember the order
+in which the acculumator and element go in a `fold` function,
+e.g., `Seq.fold (fun acc elem -> acc * elem) 1`.
