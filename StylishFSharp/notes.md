@@ -127,6 +127,15 @@ Think carefully whether the given input could cause an exception.
 There are many collection functions that have `try` equivalents
 (return `None` when there's no return value, `Some` when there is.
 
+If a partial function doesn't have a `try` equivalent,
+you can write your own.
+
+Other modules where collection functions are found:
+`Array2D`, `Array3D`, `Array4D`, `Map`, and `Set`.
+
+Instead of `|> Array.map (fun x -> doSomething x)`, just use
+`|> Array.map doSomething`.
+
 ### Miscellaneous
 
-An underscore in a large number (200\_000), helps as a visual aid.
+An underscore in a large number (`200\_000`), helps as a visual aid.
