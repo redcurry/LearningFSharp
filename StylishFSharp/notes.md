@@ -159,3 +159,127 @@ Be aware of `Seq.isEmpty`.
 Use the *acc-elem* phrase to remember the order
 in which the acculumator and element go in a `fold` function,
 e.g., `Seq.fold (fun acc elem -> acc * elem) 1`.
+
+## Chapter 6
+
+You can group several cases in a `match` expression to perform the same code.
+
+If you follow a matched case with `as x`, the variable `x`
+will have the actual value that was matched (such as in a group of cases).
+
+You can use `when` in a match expression, e.g.,
+
+    match number with
+    | 1             -> "One"
+    | 2             -> "Two"
+    | x when x < 12 -> "Less than a dozen"
+    | x when x = 12 -> "A dozen"
+    | _             -> "More than a dozen"
+
+You can pattern match a record in the function argument
+(and don't need to specify all fields, just the ones you want), e.g.,
+
+    let formatMenuItem ({ Title = title; Artist = artist }) =
+        sprintf "%s - %s" title artist
+
+Recommended to include labels for discriminated unions (DUs)
+with a payload during declaration, construction, and decomposition, e.g.,
+
+    // Declaration
+    type MeterReading =
+    | Standard of int
+    | Economy7 of Day:int * Night:int
+
+    // Construction
+    let reading = Economy7(Day=3244, Night=98218)
+
+    // Decomposition
+    match reading with
+    | Economy7(Day=day; Night=night) -> ...
+
+In decomposition, the separator is a semicolon rather than a comma
+because you can omit parameters you don't need.
+
+You can use single case DUs to model simple types, e.g.,
+
+    type Complex = Complex of Real:float * Imaginary:float
+
+DUs can also be pattern matched in a function declaration,
+but don't overdo it, as non-single case DUs can be even more confusing.
+
+You can do pattern matching directly in a `let` binding,
+so that `real` and `imaginary` will have the corresponding values:
+
+    let c = Complex(Real=0.2, Imaginary=3.4)
+    let (Complex(real, imaginary)) = c
+
+    // Or using the labels (but you must use a semicolon)
+    let (Complex(Real=real; Imaginary=imaginary)) = c
+
+A DU can be made to behave like C# `enum` flags,
+using the `[<Flags>]` attribute, but this is used in rare cases.
+
+You can define and use a single case active pattern as follows:
+
+    let (|Currency|) (x : float) =
+        Math.Round(x, 2)
+
+    match 100./3. with
+    | Currency 33.33 -> true
+    | _              -> false
+
+Above, the value `100./3.` will be passed to `Currency`,
+and the result will be compared to `33.33` to test the match.
+
+In a multi-case active pattern, it would return one
+of the cases (up to 7) defined by the pattern, e.g.,:
+
+    let (|Mitsubishi|Samsung|Other|) (s : string) =
+        let m = Regex.Match(s, @"([A-Z]{3})(\-?)(.*)")
+        if m.Success then
+            match m.Groups.[1].Value with
+            | "MWT" -> Mitsubishi
+            | "SWT" -> Samsung
+            | _     -> Other
+        else
+            Other
+
+In a partial active pattern, you can match by a case
+or by no cases:
+
+    let (|Mitsubishi|_|) (s : string) =
+        let m = Regex.Match(s, @"([A-Z]{3})(\-?)(.*)")
+        if m.Success then
+            match m.Groups.[1].Value with
+            | "MWT" -> Some s
+            | _     -> None
+        else
+            None
+
+    turbines
+    |> Seq.iter (fun t ->
+        match t with
+        | Mitsubishi m -> printfn "%s is a Mitsubishi turbine" m
+        | _ as s       -> printfn "%s is not a Mitsubishi turbine" s)
+
+Notice that even though the active pattern "function" above
+may return `Some`, this is matched with `Mitsubishi`.
+
+Active patterns may have parameters, passed before the primary input.
+
+Patterns can be compined with `&` in a pattern match.
+
+When working with classes, you can cast an object of one type
+to another, using `:>`.
+
+You can pattern match on the type of an object, using `:?`, e.g.,
+
+    match person with
+    | :? Child as child -> // ...
+    | _ as person       -> // ...
+
+You can pattern match on `null` directly:
+
+    match s with
+    | null -> "(NONE)"
+    | _    -> s.ToUpper()
