@@ -283,3 +283,59 @@ You can pattern match on `null` directly:
     match s with
     | null -> "(NONE)"
     | _    -> s.ToUpper()
+
+## Chapter 7: Record Types
+
+To create a copy of a record with a field replaced, use `with`:
+
+    let myRecord =
+        { String = "Hello"
+          Int = 99 }
+
+    let myRecord2 =
+        { myRecord with String = "Hi" }
+
+Use the `[<CLIMutable>]` attribute on a record when you need
+the record to have a default constructor and getters/setters
+(used by external code, such as deserialization).
+
+In F# (and C#), classes have referential equality
+(equal if they represent the same object in memory).
+
+Record types have structural equality, except when any of its fields
+has referential equality.
+
+F# has the attributes `ReferenceEquality`, `NoEquality`,
+and `NoComparison` to change the equality behavior of records.
+
+Declaring a record as a `struct` with the `[<Struct>]` attribute
+may improve performance (in some cases).
+
+Records can be generic:
+
+    type LatLon<'T> =
+        { Latitude : 'T
+          Longitude : 'T }
+
+    // Automatic type inference to LatLon<float>
+    let waterloo =
+        { Latitude = 51.3021
+          Longitude = -0.1132 }
+
+    // Manual type specification
+    let waterloo : LatLon<float> =
+        { Latitude = 51.3021
+          Longitude = -0.1132 }
+
+Records may be recursive, but be careful to create circular
+hierarchies (it is possible using `let rec` and `and`).
+
+Records may have instance and static methods
+(defined using `with` keyword).
+
+A common method to override in a record is `ToString()`,
+which is called by `printfn` using the `%O` format specifier.
+
+### Miscelaneous
+
+Use `#time "on"` and `#time "off"` to do performance checks.

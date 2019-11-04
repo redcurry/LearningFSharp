@@ -9,6 +9,7 @@
     <None Include="Script_04.fsx" />
     <None Include="Script_05.fsx" />
     <None Include="Script_06.fsx" />
+    <None Include="Script_07.fsx" />
   </ItemGroup>
 
 </Project>
