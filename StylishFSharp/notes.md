@@ -339,3 +339,204 @@ which is called by `printfn` using the `%O` format specifier.
 ### Miscelaneous
 
 Use `#time "on"` and `#time "off"` to do performance checks.
+
+## Chapter 8: Classes
+
+F# classes can inherit from C# classes and implement C# interfaces.
+
+When to use F# classes:
+
+- internal and external reperesentations of data need to differ
+- need to hold on to or mutate state over time
+- need to interact with an object-oriented codebase like C#
+
+A class declaration and the main constructor are one and the same:
+
+    type ConsolePrompt(message : string) =
+        ...
+
+Above, the value `message` is available throughout the rest of the class.
+
+Instantiate a class with our without the `new` keyword:
+
+    let prompt = ConsolePrompt("Hello")
+    let prompt2 = new ConsolePrompt("Hello")
+
+Class members are declared inside the class like:
+
+    member this.MemberName(parameter : type) =
+        ...
+
+Above, `this` is the convertion but can be any nonkeyword.
+
+Members can be called recursively without the use of `rec`.
+
+The body of the constructor can appear directly under the type declaration
+(before any members are declared).
+
+Only two kinds of operations can be done in the constructor:
+`do` (imperative actions) and `let` (binding actions).
+
+Any `let` bindings in the constructor are available throughout the class.
+
+You can expose any value via a property definition:
+
+    member this.Message =
+        message
+
+You can define an auto-implemented property with a default value:
+
+    // No need for "this"
+    member val BeepOnError = true
+        with get, set
+
+Additional constructors are defined with `new` and must call
+the main constructor:
+
+    // Class definition and main constructor
+    type ConsolePrompt(message : string, beepOnError : bool) =
+        ...
+
+        // Additional constructor
+        new (message : string) =
+            ConsolePrompt(message, true)
+
+You can define a property with getter and setter:
+
+    type ConsolePrompt =
+
+        let mutable foreground = ConsoleColor.White
+        let mutable background = ConsoleColor.Black
+
+    member this.ColorScheme
+        with get() =
+            foreground, background      // Tuple
+        and set(fg, bg) =               // Tuple
+            if fg = bg then
+                raise <| ArgumentException(
+                            "Foreground, background can't be the same")
+
+            foreground <- fg
+            background <- bg
+
+When using mutable state, always be aware of the thread-safety implications.
+
+Classes can be generic:
+
+    type ConsolePrompt<'T>(message : string) =
+        ...
+
+You can name the parameters in a constructor when called:
+
+    let prompt = ConsolePrompt(message = "Name", ...)
+
+You can also initialize properties in the constructor parameters:
+
+    // BeepOnError is a mutable property
+    let prompt = ConsolePrompt("Name", BeepOnError = false)
+
+You can have read-only indexed properties:
+
+    member this.Item i =
+        ...
+
+For a mutable index property:
+
+    member this.Item =
+        with get(i) =
+            ...
+        and set i value =
+            ...
+
+It's possible to have a multidimensional indexed property.
+
+### Interfaces and Abstract Classes
+
+Define an interface as follows:
+
+    type IMediaPlayer =
+        abstract member Open : string -> unit
+        abstract member Play : unit -> unit
+        ...
+
+Implement an interface as follows:
+
+    type DummyPlayer() =
+
+        interface IMediaPlayer with
+
+            member this.Open(mediaId : string) =
+                ...
+
+            member this.Play() =
+                ...
+
+To access any interface members, you must cast the concrete class
+to the interface, using the `:>` operator:
+
+    let player = new DummyPlayer() :> IMediaPlayer
+    player.Open("Dreamer")
+    player.Play()
+
+You can implement an interface (or inherit a class) on the fly,
+without naming it, by using an object expression:
+
+    // Interface
+    type ILogger =
+        abstract member Info : string -> unit
+        abstract member Error : string -> unit
+
+    let logger = {
+        new ILogger with
+            member this.Info(msg) = printfn "%s" msg
+            member this.Error(msg) = printfn "%s" msg }
+
+An abstract class can be defined as the following example:
+
+    [<AbstractClass>]
+    type AbstractClass() =
+        abstract member SaySomething : string -> string
+
+It must have the `[<AbstractClass>]` attribute because not all members
+have default implementations.
+
+To implement:
+
+    type ConcreteClass(name : string) =
+        inherit AbstractClass()
+        override this.SaySomething(whatToSay) =
+            ...
+
+To specify a default implementation:
+
+    type ParentClass() =
+        abstract member SaySomething : string -> string
+        default this.SaySomething(whatToSay) =
+            ...
+
+    // Inherit default implementation
+    type ConcreteClass1() =
+        inherit ParentClass()
+
+    // Override default implementation
+    type ConcreteClass2() =
+        inherit ParentClass()
+        override this.SaySomething(whatToSay) =
+            ...
+
+### Equality and Comparison
+
+Classes use reference equality (not structural equality).
+
+To properly implement structural equality in classes, you need to:
+
+- implement interface `IEquatable<>`
+- override `Equals()`
+- override `GetHashCode()`
+- override `op_Equality` (static member)
+
+Creating a hash code is simple: tuple together the items
+that represent equality and apply the built-in `hash` function.
+
+You can also implement the generic and non-generic versions
+if `IComparable` when necessary (e.g., using a set).
