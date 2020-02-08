@@ -14,7 +14,7 @@ Generic discriminated union:
 Using pattern matching on an option type:
 
     let address =
-        match delivery
+        match delivery with
         | Some s -> s
         | None   -> billing
 
@@ -125,7 +125,7 @@ Partial collection functions are those that may cause an exception
 Think carefully whether the given input could cause an exception.
 
 There are many collection functions that have `try` equivalents
-(return `None` when there's no return value, `Some` when there is.
+(return `None` when there's no return value, `Some` when there is).
 
 If a partial function doesn't have a `try` equivalent,
 you can write your own.
