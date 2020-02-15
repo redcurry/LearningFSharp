@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Script_09.fsx" />
     <None Include="Script_04.fsx" />
     <None Include="Script_05.fsx" />
     <None Include="Script_06.fsx" />

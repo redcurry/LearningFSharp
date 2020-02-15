@@ -540,3 +540,17 @@ that represent equality and apply the built-in `hash` function.
 
 You can also implement the generic and non-generic versions
 if `IComparable` when necessary (e.g., using a set).
+
+## Ch. 9: Programming with Functions
+
+Use type hints when the compiler gets confused,
+but one should be able to remove them when everything compiles.
+
+You can hide state inside a function:
+
+    let randomByte =
+        let r = System.Random()
+        fun () ->
+            r.Next(0, 255) |> byte
+
+Compose functions using `>>`.
