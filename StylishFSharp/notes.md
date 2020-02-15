@@ -554,3 +554,31 @@ You can hide state inside a function:
             r.Next(0, 255) |> byte
 
 Compose functions using `>>`.
+
+## Ch. 10: Asyrchronous and Parallel Programming
+
+The `function` keyword may be used to create a pattern matching function:
+
+    let isOk = function
+        | OK _ -> true
+        | Failed _ -> false
+
+    // Which is the same as
+    let isOk outcome =
+        match outcome with
+        | OK _ -> true
+        | Failed _ -> false
+
+Functions may be private to a module with the keywoard `private`:
+
+    let private myFunc = ...
+
+To turn a synchronous function into an asynchronous function:
+
+    1. Place the body in `async {}`
+    2. Use `Async` version of time-consuming function
+    3. Use `let!` or `do!` to call async function,
+       and may use `Async.AwaitTask` to convert from C# task
+    4. Use `return` to return the result
+
+Use a lock object and `lock` to make a function thread-safe.
