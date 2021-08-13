@@ -560,6 +560,8 @@ Compose functions using `>>`.
 Tip: Write the program as synchronous, and then convert the relevant parts
 to asynchronous.
 
+### Pattern Matching with `function`
+
 The `function` keyword may be used to create a pattern matching function:
 
     let isOk = function
@@ -572,9 +574,13 @@ The `function` keyword may be used to create a pattern matching function:
         | OK _ -> true
         | Failed _ -> false
 
+### Private functions
+
 Functions may be private to a module with the keywoard `private`:
 
     let private myFunc = ...
+
+### Convert Synchronous Function to Asynchronous
 
 To turn a synchronous function into an asynchronous function:
 
@@ -601,6 +607,8 @@ The async version should be
             return links
         }
 
+### The `do!` Keyword and `Async.AwaitTask`
+
 The `do!` is used when the function doesn't return anything,
 but should be called for its side-effects (most likely it's a C# function).
 For example (which also shows using `Async.AwaitTask`),
@@ -608,6 +616,8 @@ For example (which also shows using `Async.AwaitTask`),
     do!
         client.DownloadFileTaskAsync(fileUri, filePath)
         |> Async.AwaitTask
+
+### Run Async Computations in Parallel
 
 If you have several computations to run in parallel, pipe to `Async.Parallel`.
 In the following example, `tryDownload` is an async computation:
@@ -617,9 +627,13 @@ In the following example, `tryDownload` is an async computation:
         |> Seq.map (tryDownload localPath)
         |> Async.Parallel
 
+### Run Async Computation Synchronously
+
 At the top level (e.g., `main`), pipe an async computation
 to `Async.RunSynchronously` to run it and wait for its results
 (that async computation should run whatever it needs in parallel).
+
+### Thread-Safe Functions with `lock`
 
 Use a lock object and `lock` to make a function thread-safe.
 For example, if the original is
