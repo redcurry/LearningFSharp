@@ -557,6 +557,9 @@ Compose functions using `>>`.
 
 ## Ch. 10: Asyrchronous and Parallel Programming
 
+Tip: Write the program as synchronous, and then convert the relevant parts
+to asynchronous.
+
 The `function` keyword may be used to create a pattern matching function:
 
     let isOk = function
@@ -576,9 +579,62 @@ Functions may be private to a module with the keywoard `private`:
 To turn a synchronous function into an asynchronous function:
 
     1. Place the body in `async {}`
-    2. Use `Async` version of time-consuming function
-    3. Use `let!` or `do!` to call async function,
+    2. Use the `Async` version of the function to use
+       (hopefully provided by the third-party library)
+    3. Use `let!` or `do!` (or `match!`) to call the async function above,
        and may use `Async.AwaitTask` to convert from C# task
     4. Use `return` to return the result
 
+For example, if the original is
+
+    let getLinks uri =
+        let html = HtmlDocument.Load(uri)
+        let links = html.Descendants ["a"]
+        links
+
+The async version should be
+
+    let getLinks uri =
+        async {
+            let! html = HtmlDocument.AsyncLoad(uri)
+            let links = html.Descendants ["a"]
+            return links
+        }
+
+The `do!` is used when the function doesn't return anything,
+but should be called for its side-effects (most likely it's a C# function).
+For example (which also shows using `Async.AwaitTask`),
+
+    do!
+        client.DownloadFileTaskAsync(fileUri, filePath)
+        |> Async.AwaitTask
+
+If you have several computations to run in parallel, pipe to `Async.Parallel`.
+In the following example, `tryDownload` is an async computation:
+
+    let! downloadResults =
+        links
+        |> Seq.map (tryDownload localPath)
+        |> Async.Parallel
+
+At the top level (e.g., `main`), pipe an async computation
+to `Async.RunSynchronously` to run it and wait for its results
+(that async computation should run whatever it needs in parallel).
+
 Use a lock object and `lock` to make a function thread-safe.
+For example, if the original is
+
+    let report color message =
+        Console.ForegroundColor <- color
+        printfn "%s" message
+        Console.ResetColor()
+
+The thread-safe version is
+
+    let report =
+        let lockObj = obj()
+        fun color message ->
+            lock lockObj (fun _ ->
+                Console.ForegroundColor <- color
+                printfn "%s" message
+                Console.ResetColor())
