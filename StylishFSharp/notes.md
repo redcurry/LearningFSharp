@@ -560,6 +560,9 @@ Compose functions using `>>`.
 Tip: Write the program as synchronous, and then convert the relevant parts
 to asynchronous.
 
+To learn more about async, read "F# Async Guide" by Leo Gorodinski
+on medium.com.
+
 ### Pattern Matching with `function`
 
 The `function` keyword may be used to create a pattern matching function:
@@ -652,3 +655,38 @@ The thread-safe version is
                 Console.ForegroundColor <- color
                 printfn "%s" message
                 Console.ResetColor())
+
+### Batching
+
+Run a set of async computations in parallel before running the next set:
+
+    links
+    |> Seq.map (tryDownload path)
+    |> Seq.chunkBySize batchSize
+    |> Seq.collect (fun batch ->
+        batch
+        |> Async.Parallel
+        |> Async.RunSynchronously)
+
+But may be inefficient because the next set won't start until
+all runs from the previous set finish. Instead, use throttling.
+
+### Throttling
+
+Run many async computations with only a limited set running at once
+(requires package FSharpx.Async):
+
+    links
+    |> Seq.map (tryDownload path)
+    |> Async.ParallelWithThrottle 5
+
+This example keeps the network busy without having too many downloads
+fighting for limited bandwith.
+
+### C# Tasks
+
+To use a C# `Task`, convert it to an F# `Async` with `Async.AwaitTask`
+in order to use it with `let!` or `do!`.
+
+To expose async functions in an API, convert them to C# `Tasks`
+using `Async.StartAsTask`.
