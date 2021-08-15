@@ -690,3 +690,75 @@ in order to use it with `let!` or `do!`.
 
 To expose async functions in an API, convert them to C# `Tasks`
 using `Async.StartAsTask`.
+
+## Ch. 11: Railway Oriented Programming
+
+The idea is to work with functions that may return Success or Failure,
+and use helper functions to permit Successes to continue processing
+while collecting Failures on a separate "conveyor belt."
+
+### Writing Adapters from Scratch
+
+The definition of a results (or outcome) as Success or Failure:
+
+    type Outcome<'TSuccess, 'TFailure> =
+        | Success of 'TSuccess
+        | Failure of 'TSuccess
+
+An adapter takes an `Outcome` input and a function (which returns an `Outcome`),
+and processes it if the input is Successful but does not if it is a Failure:
+
+    let adapt func input =
+        match input with
+        | Success x -> func x
+        | Failure f -> Failure f
+
+A pass-through adapter takes an `Outcome` input and function (which is always
+successful, so it does not return an `Outcome`) and processes it if the input
+is Successful but does not if it is a Failure:
+
+    let passThrough func input =
+        match input with
+        | Success x -> Success (func x)
+        | Failure f -> Failure f
+
+Example of a pipeline (using functional composition with `>>`):
+
+    let validateAndSave =
+        notEmpty                    // takes normal input
+        >> adapt mixedCase
+        >> adapt containsSpecial
+        >> passThrough tidy
+        >> adapt save
+
+### Official F# Types
+
+Instead of `Outcome`, F# has type `Result` with cases `Ok` and `Error`.
+Instead of `adapt` and `passThrough`, F# has `bind` and `map`.
+
+There is a similarity between `Option.bind`/`Option.map` and
+`Result.bind`/`Result.map`.
+
+`Result.mapError` takes an input (of `Result`) and a function,
+and if the input is `Ok`, passes it through;
+if it is `Error`, applies the given function to the input.
+
+    let mapError func input =
+        match input with
+        | Ok x    -> Ok x
+        | Error f -> Error (func f)
+
+Example of usage:
+
+    let savePassword =
+        validateAndSave
+        >> mapError (fun err ->
+            match err with
+            | MustNotBeNull
+            | MustNotBeEmpty ->
+                "Password must be entered"
+            | MustContainMixedCase ->
+                "Password must contain upper and lower case characters"
+
+In the example, `err` is of custom type `ValidationError` (not shown),
+which manages the type of error (instead of `string` in previous examples).
