@@ -2,8 +2,17 @@
 
 ## Chapter 3
 
-* An expression ending in semicolon is evaluated before the next expression
-  (a semicolon is not needed in "lightweight" syntax, which is the default)
+* To be explicit about scope, use the `in` keyword:
+
+      let number = 42 in printfn $"{number}"
+
+* Function definitions can be nested, and the nested function
+  has access to the values of the parent function.
+
+* To declare and use a mutable value:
+
+      let mutable n = 10  // declaration
+      n <- 11             // re-assignment
 
 * Access the first and second elements of a tuple with "fst" and "snd"
 
