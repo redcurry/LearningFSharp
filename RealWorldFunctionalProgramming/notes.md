@@ -148,6 +148,26 @@
 
 ## Chapter 6
 
+* You can create generic functions in F# and generic methods in C#:
+
+      // F#, type is 'a -> ('a -> bool) -> ('a -> string) -> unit
+      let condPrint value test format =
+          if (test value) then printfn "%s" (format value)
+
+      // C#
+      void CondPrint<T>(T value, Func<T, bool> test, Func<T, string> format)
+      {
+          if (test(value)) Console.WriteLine(format(value));
+      }
+
+* Example of defining a custom (infix) operator in F#:
+
+      let (+>) a b = a + "\n>> " + b
+
+  The operator must be enclosed in parenthesis, and can be any of the symbols
+  `+/-*<>&|=$%.?@^~!`.
+  A prefix operator must start with `~` or `!`.
+
 * Can use pipelining operator (reverse, then take the head):
 
       [1 .. 5] |> List.rev |> List.head
@@ -159,7 +179,20 @@
 
   which can then be used like:
 
-      ("Prague", 1000) |> mapSecond ((+) 2000)
+      ("Prague", 1000) |> mapSecond ((+) 2000)  // uses partial application
+
+  In C#, this can be written and used as extension methods:
+
+      public static Tuple<B, C> MapFirst<A, B, C>
+          (this Tuple<A, C> t, Func<A, B> f)
+      {
+          return Tuple.Create(f(t.Item1), t.Item2);
+      }
+
+      Tuple.Create("Prague", 1000).MapSecond(n => n + 2000);
+
+* When creating your own types, such as a discriminated union,
+  it could be helpful to write your own map function for it.
 
 * `Option.map` takes a function and an `option` and returns
   an `option` with the function applied to the containing value.
