@@ -196,3 +196,75 @@
 
 * `Option.map` takes a function and an `option` and returns
   an `option` with the function applied to the containing value.
+
+* `Option.bind` is similar to `Option.map`, but the given function
+  must return an `option` rather than a plan value.
+
+* Using function composition, the following:
+
+      places |> List.map (fun (_, p) -> status p)
+
+  can be written as
+
+      places |> List.map (snd >> status)
+
+* Type inference is processed in order in F#. For example,
+
+      Option.map (fun dt -> dt.Year) (Some DateTime.Now)
+
+  fails because it doesn't know the type of `dt` when encountered. But
+
+      Some DateTime.Now |> Option.map (fun dt -> dt.Year)
+
+  works because when `dt` is encountered later
+  it knows which type it should be.
+
+* Recursive discriminated unions are a common way to represent data.
+
+* The following:
+
+      let names =
+          places |> List.filter (fun (_, pop) -> 1000000 < pop)
+                 |> List.map fst
+
+  can be simplified to
+
+      let names =
+          places |> List.filter (snd >> ((<) 1000000))
+                 |> List.map fst
+
+  but it's a bit harder to read, so always consider readability.
+
+* Using C# queries and F# sequence expressions, the above
+  could also be written as:
+
+      // C#
+      var names = from p in places
+                  where 1000000 < p.Population
+                  select p.Name
+
+     // F#
+     var names =
+         seq { for (name, pop) in places do
+                   if (1000000 < pop) then yield name }
+
+* You can use a tuple as in initial value in a `fold` to store
+  a temporary value, and then discard it in the end:
+
+      places
+      |> List.fold (fun (b, str) (name, _) ->
+             let n = if b then name.PadRight(20) else name + "\n"
+             (not b, str + n)
+         ) (true, "")          // true is the temp value
+      |> snd                   // snd discards it
+
+* The same code as above can be written in C# using an anonymous type:
+
+      places.Aggregate(new { StartOfLine = true, Result = "" },
+      (r, pl) => {
+          var n = b.StartOfLine ? pl.Name.PadRight(20) : (pl.Name + "\n");
+          return new { StartOfLine = !r.StartOfLine, Result = r.Result + n };
+      }).Result;
+
+* `List.collect` applies a function (which returns a list) to each element
+  and concatenates all the lists. It is similar to `SelectMany` in LINQ.
