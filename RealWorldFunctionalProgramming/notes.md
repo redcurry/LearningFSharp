@@ -268,3 +268,29 @@
 
 * `List.collect` applies a function (which returns a list) to each element
   and concatenates all the lists. It is similar to `SelectMany` in LINQ.
+
+## Chapter 7
+
+* In functional programming, it's common to represent the same data
+  with multiple data structures, and write transformations between them.
+
+* Instead of `let`, use the `use` keyword to automatically dispose
+  of the declared variable (before the function returns).
+
+* Write functions using data structures that make the code easy to write,
+  where the data may need to be transformed from some other data structure.
+
+* Write functions such that their parameters are the minimum needed,
+  both in number and in type.
+
+* Such "minimal" functions may need to be passed to higher-order functions
+  that create and clean-up the necessary context for those functions.
+  This is called the "Hole in the Middle" pattern.
+
+* A discriminated union can recursively reference itself:
+
+      type DocumentPart =
+        | SplitPart  of Orientation * list<DocumentPart>
+        | TitledPart of TextContent * DocumentPart
+        | TextPart   of TextContent
+        | ImagePart  of string
