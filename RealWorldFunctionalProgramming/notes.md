@@ -294,3 +294,28 @@
         | TitledPart of TextContent * DocumentPart
         | TextPart   of TextContent
         | ImagePart  of string
+
+* You can handle multiple values at once with one match:
+
+      match a, b with
+      | true, false  -> c
+      | false, true  -> d
+      | true, true   -> e
+      | false, false -> f
+
+* When creating a data structure, it may be helpful to write
+  a map-like function for it (possibly recursive)
+  that applies any given function to each element.
+  We need to consider the kind of traversal that's needed.
+
+* Similarly, it may be helpful to write a fold-like
+  and filter-like functions for the new data structure.
+
+* In a `match` expression, you can use an "or-pattern" where
+  you can specify multiple cases separated by `|`,
+  but it can only be used when both patterns bind a value
+  to the same identifier with the same type:
+
+      match part with
+      | TextPart tx | TitledPart (tx, _) -> a
+      | _                                -> b
