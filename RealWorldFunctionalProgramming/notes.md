@@ -319,3 +319,15 @@
       match part with
       | TextPart tx | TitledPart (tx, _) -> a
       | _                                -> b
+
+* The functional equivalent of the composite design pattern (OOP) is
+
+      type AbstractComponent
+      | CompositeComponent of AbstractComponent list
+      | ConcreteComponent of (...)
+
+* The functional equivalent of the decorator pattern is
+
+      type AbstractComponent
+      | DecoratedComponent of AbstractComponent * (...)  // added state
+      | ConcreteComponent of (...)
