@@ -331,3 +331,54 @@
       type AbstractComponent
       | DecoratedComponent of AbstractComponent * (...)  // added state
       | ConcreteComponent of (...)
+
+## Chapter 8
+
+* In F#, you can store application behaviors as a list of functions.
+
+* Point-free style: not having to assign a name to a value when
+  calling a higher-order function. For example:
+
+      [1..10] |> List.map ((+) 100)
+      places |> List.map (snd >> statusByPopulation)
+      tests |> List.filter ((|>) client) // same as (fun f -> client |> f)
+
+  But, as the last example shows, it may be harder to read, so use carefully.
+
+* The strategy pattern in OOP (where algorithms within a larger class
+  can be swapped easily) can be implemented functionally by using functions.
+
+* The command pattern in OOP can also be implemented functionally
+  by using functions (the command is the function).
+
+* In F#, you can create another kind of mutable value using a reference cell.
+  It is a small object that contains a mutable value, which can be assigned
+  (using `:=`) and accessed (using `!'). For example,
+
+      let st = ref 10
+      st := 11
+      printfn "%d" (!st)
+
+* Using a closure, you can capture a `ref` value and have the ability
+  to change it in one function and use it in another
+  while sharing the same value:
+
+      let createIncomeTest() =
+          let minimalIncome = ref 30000
+          (fun newMinimal -> minimalIncome := newMinimal),    // tuple
+          (fun client -> client.Income < !minimalIncome)
+
+      let (setMinimalIncome, testIncome) = createIncomeTest()
+
+      testClient(john)
+      setMinimalIncome(45000)   // changes the ref value
+      testClient(john)          // uses the changed value
+
+* Related functions may be grouped in a tuple (as above) or in a record:
+
+      type ClientTest =
+        { Check  : Client -> bool
+          Report : Client -> unit }
+
+  This is especially beneficial when creating a collection of function groups
+  because they can be called in the same way.
