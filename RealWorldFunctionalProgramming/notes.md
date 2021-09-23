@@ -382,3 +382,28 @@
 
   This is especially beneficial when creating a collection of function groups
   because they can be called in the same way.
+
+* A decision tree is a flowchart of questions and answers, where some answers
+  lead to additional questions and other answers lead to a final decision.
+
+* Mutually recursive types need to be defined using `and`:
+
+      type QueryInfo =
+        { Title    : string
+          Check    : Check -> bool
+          Positive : Decision
+          Negative : Decision }
+
+      and Decision =
+        | Result of string
+        | Query  of QueryInfo
+
+* When defining a value using `let`, you can also use `and` to define
+  values based on others defined later. The `rec` keyword is also necessary:
+
+      let rec form = createForm "Main form" [ btn ]
+      and btn = createButton "Close" (fun () -> form.Close())
+
+* You can mix OOP with functional concepts by having a class
+  contain a property that is a `Func`, so its behavior changes
+  based on the assigned lambda, and not having to create derived types.
