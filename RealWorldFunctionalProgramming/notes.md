@@ -488,3 +488,71 @@
   When `changeColor` is called in a `use` expression, the console's color
   will be changed immediatelly, and the disposable part will be called
   when the containing function exists, restoring the console's color.
+
+* You can define a class with a constructor in F#:
+
+      type ClientInfo(name, income, years) =
+          let loanCoefficient = income / 5000 * years  // constructor
+
+          member x.Name = name                         // properties
+          member x.Income = income
+
+          member x.Report() =      // method (can use loanCoefficient)
+              printfn "Loan coefficient: %d" loanCoefficient
+
+* In the functional style, the class should be immutable,
+  where changing a property returns a new object with the property changed:
+
+      type Client(name, income) =
+          member x.WithIncome(v) =
+              new Client(name, v)
+
+  In the imperative style, you can define a mutable field
+  and a getter and setter for a property:
+
+      type Client(name, income) =
+          let mutable income = income    // hides original income
+
+          member x.Income
+              with get()  = income
+              and  set(v) = income <- v
+
+* To implement an interface:
+
+      type CoefficientTest(minValue, ...) =
+
+          let coeff(client) = ...
+          let report(client) = ...
+
+          interface ClientTest with
+              member x.Check(client) = coeff(client) < minValue
+              member x.Report(client) = report(client)
+
+* In F#, the implementation methods must be used with the interface type,
+  not with the derived class, so we will need to upcast:
+
+      let test = new CoefficientTest(...)
+      let clTest = (test :> ClientTest)     // upcast
+      clTest.Report(...)
+
+  In order to have class methods (not interface methods) that implement
+  the interface, create normal members in addition to the interface methods.
+
+* The downcast operator is `:?>`, and the equivalent of `is` (C#) is `:?`,
+  such as `obj :? String`.
+
+* When accessed from C#, a record in F# appear as a class, its fields
+  will appear as properties, and its members will appear as methods.
+  A constructor that takes all the initial field values will also be
+  automatically generated.
+
+* To make an F# code file accessible from C#, include a `namespace` at the top.
+
+* To expose values and functions to C#, wrap the code in a `module`,
+  which is seen as a static class in C#.
+
+* To expose a higher-order function that takes another function,
+  use `Func` as a parameter:
+
+      let WithIncome (f:Func<_, _>) client =
+        { client with Income = f.Invoke(client.Income) }
