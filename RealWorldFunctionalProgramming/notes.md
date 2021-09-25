@@ -407,3 +407,84 @@
 * You can mix OOP with functional concepts by having a class
   contain a property that is a `Func`, so its behavior changes
   based on the assigned lambda, and not having to create derived types.
+
+## Chapter 8
+
+* Example of adding a method to a record in F# (but can also add to
+  any data type, including discriminated unions):
+
+      type Rect =
+        { Left   : float32
+          Top    : float32
+          Width  : float32
+          Height : float32 }
+
+        member x.Deflate(wspace, hspace) =
+          { Left   = x.Left + wspace
+            Top    = x.Top + hspace
+            Width  = x.Width - (2.0f * wspace)
+            Height = x.Height - (2.0f * hspace) }
+
+    where `x` refers to the current instance. It may be named
+    something else, like `this` or `self`.
+
+* When intending to expose methods to C#, use tuples as parameters.
+
+* Use `///` to write a summary of the method to be used by IntelliSense.
+
+* You can add members after the original type has been defined using `with`:
+
+      type Schedule with
+          member x.GetNextOccurrence() = ...
+          member x.OccursNextWeek = ...         // property
+
+  The original type can even be in another assembly.
+
+* One benefit of defining methods after the original type is that
+  there can be utility functions between the type and the methods
+  that are used by the methods.
+
+* You can declare a type that behaves like an interface in F#
+  (and looks like an interface from C#):
+
+      type ClientTest =
+          abstract Check : Client -> bool
+          abstract Report : Client -> unit
+
+* You can implement this interface on the fly using object expressions:
+
+      let testCriminal =
+        { new ClientTest with
+              member x.Check(cl) = cl.CriminalRecord = true
+              member x.Report(cl) =
+                  printfn "'%s' has a criminal record!" cl.Name }
+
+* An example of using object expressions is when working with the
+  `Dictionary` class of .NET. You can create a value that implements
+  `IEqualityComparer<T>` and pass that to the `Dictionary` constructor.
+
+* You don't need to specify the `T` type of .NET generics and instead
+  use `\_`. The F# compiler will figure out the type automatically.
+
+* Normally, the `use` keyword disposes the value when the function
+  exists. But one can dispose of a value earlier by using `use`
+  instead of a `let`:
+
+      let text =
+          use reader = new StreamReader("C:\\test.txt")
+          reader.ReadToEnd()
+      Console.Write(text)        // reader has been disposed
+
+* Another use of object expressions is when implementing `IDisposable`
+  to use with the `use` keyword:
+
+      let changeColor(clr) =
+          let orig = Console.ForegroundColor
+          Console.ForegroundColor <- clr
+          { new IDisposable with
+                member x.Dispose() =
+                    Console.ForegroundColor <- orig }
+
+  When `changeColor` is called in a `use` expression, the console's color
+  will be changed immediatelly, and the disposable part will be called
+  when the containing function exists, restoring the console's color.
