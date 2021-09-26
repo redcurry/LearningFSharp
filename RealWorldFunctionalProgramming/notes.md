@@ -556,3 +556,64 @@
 
       let WithIncome (f:Func<_, _>) client =
         { client with Income = f.Invoke(client.Income) }
+
+## Chapter 10
+
+* In project properties (Build), the "Generate tail calls" option
+  uses the `tailcall` IL instruction to optimize tail call recursion.
+  It is off in the Debug configuration by default.
+
+* The following recursive function to sum a list of numbers is inefficient:
+
+      let rec sum lst =
+          match lst with
+          | []    -> 0
+          | x::xs -> x + sum xs
+
+  This is because the `x` value needs to be stored in order to perform
+  the sum after each recursive call returns.
+
+* It's better to write functions using tail call recursion,
+  where no computation happens after each recursive call.
+  This way, the compiler can avoid creating a stack for each call.
+  The above example can be re-written to use tail call recursion:
+
+      let sum lst =
+          let rec sumUtil lst n =
+              match lst with
+              | []    -> n
+              | x::xs -> sumUtil xs (x + n)
+          sumUtil lst 0
+
+* To cache results in a function, so that it doesn't recalculate
+  a computation with the same input, use the memoization technique:
+
+      let add' a b = a + b             // normal function
+
+      let add =
+          let cache = new Dictionary<_, _>()
+          fun a b ->
+              match cache.TryGetValue((a, b)) with
+              | true, result -> result
+              | _            ->
+                  let result = add' a b
+                  cache.Add((a, b), result)
+                  result
+
+* Memoization can be generalized to apply to any function:
+
+      let memoize f =
+          let cache = new Dictionary<_, _>()
+          fun x ->
+              match cache.TryGetValue(x) with
+              | true, result -> result
+              | _            ->
+                  let result = f x
+                  cache.Add(x, result)
+                  result
+
+  But be careful when using with recursive functions because
+  the recursive call needs to use the memoized function:
+
+      let rec factorial = memoize (fun x ->
+          if (x <= 0) then 1 else x * factorial (x - 1))
