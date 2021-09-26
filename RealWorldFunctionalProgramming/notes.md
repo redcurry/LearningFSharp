@@ -617,3 +617,66 @@
 
       let rec factorial = memoize (fun x ->
           if (x <= 0) then 1 else x * factorial (x - 1))
+
+* Another example of using tail recursion:
+
+      let filter f list =
+          let rec filter' f list acc =
+              match list with
+              | []   -> List.rev acc
+              | x:xs -> let acc = if (f x) then x::acc else acc
+                        filter' f xs acc
+          filter' f list []
+
+* Use the `#time` directive in F# Interactive to measure timing.
+
+* Prepending an element to a list is O(1) whereas appending is O(N).
+
+* To use arrays in a functional style, instead of mutating the array
+  directly, write a function that returns a new array.
+  Internally, the function will need to mutate the new array,
+  but this is not visible to the outside, so it is OK.
+
+* Most LINQ operations in C# don't return arrays, but the `System.Array`
+  class has static methods that work with arrays functionally.
+  For example, the map operation is under the name `ConvertAll`.
+
+* Hide the `Select` method in LINQ with one that processes arrays:
+
+      public static R[] Select<T, R>(this T[] array, Func<T, R> map)
+      {
+          var result = new R[arr.Length];
+          for (int i = 0; i < array.Length; i++)
+              result[i] = map(array[i]);
+          return result;
+      }
+
+* Consider a tree data structure:
+
+      type IntTree =
+        | Leaf of int
+        | Node of IntTree * IntTree
+
+  and a recursive function to sum all elements:
+
+      let rec sumTree tree =
+          match tree with
+          | Leaf n           -> n
+          | Node left, right -> sumTree left + sumTree right
+
+  The above implementation is inefficient (produces stack overflow)
+  on imbalanced trees because it does work after a recursive call.
+
+  It can be rewritten using the "continuation" technique,
+  which uses tail recursion and is more efficient:
+
+      let rec sumTree tree cont =
+          match tree with
+          | Leaf n           -> cont n
+          | Node left, right ->
+              sumTree left (fun leftSum ->
+                  sumTree right (fun rightSum ->
+                      cont(leftSum + rightSum)))
+
+      // Use the identity function to get the final sum
+      sumTree myTree id
