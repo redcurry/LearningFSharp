@@ -680,3 +680,13 @@
 
       // Use the identity function to get the final sum
       sumTree myTree id
+
+## Chapter 11
+
+* If a higher-order function takes a function that returns a
+  type annotated with `#`, such as `#seq<int>`, it means that
+  you can pass that higher-order function a function that
+  returns a derived type (a `list<int>` in the example).
+
+* One refactoring is to create a function with the differing code
+  to a higher-order function that has the boiler-plate code.
