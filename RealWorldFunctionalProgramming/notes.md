@@ -690,3 +690,41 @@
 
 * One refactoring is to create a function with the differing code
   to a higher-order function that has the boiler-plate code.
+
+* Put unit tests in their own module to keep them separete
+  from the main program.
+
+* My note: For unit tests to run properly in Visual Studio using NUnit,
+  the project must target .NET Core or Framework (not .NET Standard).
+  Also, install packages NUnit, NUnit3TestAdapter, and
+  Microsoft.NET.Test.Sdk. Example test:
+
+       module UtilTests =
+
+           [<Test>]
+           let applyn_ten() =
+               let result = applyn 10 ((+) 1) 0
+               Assert.That(result, Is.EqualTo([1..10]))
+
+* F# automatically generates comparison and equality methods
+  for immutable types, like records, tuples, and discriminated unions,
+  but not for classes.
+
+* Evaluations in F# are eager: arguments of a function are evaluated
+  before executing the function.
+
+* In F#, you can create a lazy operation with the `lazy` keyword,
+  and force the computation (and extract its value) by accessing the
+  `Value` property:
+
+      let n = lazy (foo 10)
+      n.Value
+
+  The type returned by `lazy` is `Lazy<'a>`.
+
+* There's an implentation of a lazy list in the FSharp.PowerPack.dll
+  library as `LazyList<'a>` (but it seems it's in the FSharpx library).
+
+* An additional advantage of using lazy evaluation, is that the computation
+  is cached, so calling the `Value` on the lazy value a second time
+  does not compute it again; it returns the cached value.
