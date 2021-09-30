@@ -775,3 +775,29 @@
                         let num = num + 1
                         yield! factorialsUtil num (factorial * num) }
           factorialsUtil 0 1
+
+* You can also do list and array expressions, which is a shortcut
+  for a sequence expression automatically converted to a list or array:
+
+      let cities =
+          [ yield "Oslo"
+            yield! capitals ]
+
+* Example of an infinite sequence of random colors:
+
+      let rnd = new Random()
+      let rec randomColors = seq {
+          let r, g, b = rnd.Next(256), rnd.Next(256), rnd.Next(256)
+          yield Color.FromArgb(r, g, b)
+          yield! randomColors }
+
+  This function could be used to pair up data with colors using `Seq.zip`.
+
+  Also, this function is not pure because each time it is called
+  it returns a different set of colors since they are random.
+  For this reason, the desired sequence should be converted to a concrete list.
+
+* The `Seq.cache` function returns a sequence (given a sequence expression)
+  that caches values that have already been calculated, so it's useful
+  when creating sequence expressions that are recursive.
+  However, it is even better to use `yield!` when possible.
