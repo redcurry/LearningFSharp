@@ -728,3 +728,50 @@
 * An additional advantage of using lazy evaluation, is that the computation
   is cached, so calling the `Value` on the lazy value a second time
   does not compute it again; it returns the cached value.
+
+## Chapter 12
+
+* Example of `Seq.unfold` to create a sequence of numbers as strings:
+
+      let nums = Seq.unfold (fun num ->
+          if (num <= 10) then Some(string(num), num + 1) else None) 0
+
+  `None` ends the sequence. `Some` contains a tuple where the first value
+  is what to put next in the sequence, and the second value is what to send
+  to the function for the next element of the sequence.
+
+* The F# type `seq<int>` is equivalent to `IEnumerable<int>`.
+
+* In C#, you can generate `IEnumerable` using iterators:
+
+      static IEnumerable<string> Factorials()
+      {
+          int factorial = 1;
+          for (int num = 0; factorial < 1000000; num++)
+          {
+              factorial *= num;
+              yield return $"{num}! = {factorial}";
+          }
+      }
+
+  To end the sequence, use `yield break`.
+
+* Example of a sequence expression in F#:
+
+      let nums =
+          seq { let n = 10
+                yield n + 1
+                yield n + 2 }
+
+  Sequences are evaluated lazily. Use `yield!` to yield another sequence,
+  element by element.
+
+* The F# version of the factorial example above:
+
+      let factorials =
+          let rec factorialsUtil num factorial =
+              seq { if factorial < 1000000 then
+                        yield $"{num}! = {factorial}"
+                        let num = num + 1
+                        yield! factorialsUtil num (factorial * num) }
+          factorialsUtil 0 1
