@@ -801,3 +801,20 @@
   that caches values that have already been calculated, so it's useful
   when creating sequence expressions that are recursive.
   However, it is even better to use `yield!` when possible.
+
+* In C#, one may need to use the `GetEnumerator()` and `MoveNext()` methods
+  directly instead of `foreach`, such as when implementing a zip method
+  that takes two `IEnumerable<T>`.
+
+* Translation of C# LINQ methods to F# higher-order functions:
+
+      var nums1 =                    let nums1 =
+          nums.Where(n => n%3 == 0)      nums |> Seq.filter (fun n -> n%3 == 0)
+              .Select(n => n * n)             |> Seq.map (fun n -> n * n)
+
+  Translation of C# query syntax to F# sequence expression:
+
+      var nums1 =                    let nums1 = seq {
+          from n in nums                 for n in nums do
+          where n%3 == 0                     if (n%3 = 0) then
+          select n * n                           yield n * n }
