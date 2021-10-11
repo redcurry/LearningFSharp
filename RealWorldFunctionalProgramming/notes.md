@@ -818,3 +818,11 @@
           from n in nums                 for n in nums do
           where n%3 == 0                     if (n%3 = 0) then
           select n * n                           yield n * n }
+
+* Use a sequence expressions to "join" (database terminology) two collections
+  on a key:
+
+      seq { for enteredCity in enteredCities do
+                for (city, country) in cities do
+                    if (city = enteredCity) then
+                        yield $"{city} ({country})" }
