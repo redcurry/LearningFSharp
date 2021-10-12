@@ -826,3 +826,41 @@
                 for (city, country) in cities do
                     if (city = enteredCity) then
                         yield $"{city} ({country})" }
+
+* `Seq.collect` projects into a collection of values and then concatenates them.
+  It is analogous to `SelectMany` in LINQ.
+
+* Bind operations are those of the form:
+
+      Option.bind  : ('a -> option<'b>) -> option<'a> -> option<'b>
+      List.collect : ('a -> list<'b>)   -> list<'a>   -> list<'b>
+
+* A computation expression is a monad, and can be implemented using
+  two functions: `bind` and `return`.
+
+* Creating custom computations in F#:
+
+      // Define the computation type
+      type ValueWrapper<'a> =
+        | Value of 'a
+
+      // Define a "builder" type with Bind and Return members
+      type ValueWrapperBuilder() =
+          member x.Bind (Value v, f) = f v
+          member x.Return v = Value v
+
+      // Create an instance of the builder
+      let value = new ValueWrapperBuilder()
+
+* The following code can be written using the `value` defined above:
+
+      let readInt() = value {
+          let n = Int32.Parse(Console.ReadLine())
+          return n }
+
+      value {
+          let! n = readInt()
+          let! m = readInt()
+          let add = n + m
+          let sub = n - m
+          return add + sub }
