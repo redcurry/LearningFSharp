@@ -864,3 +864,65 @@
           let add = n + m
           let sub = n - m
           return add + sub }
+
+* Creating an `option` computation expression:
+
+      type OptionBuilder() =
+          member x.Bind (opt, f) =
+              match opt with
+              | Some v -> f v
+              | _      -> None
+          member x.Return(v) = Some v
+
+      let option = new OptionBuilder()
+
+* Example using the `option` expression:
+
+      option {
+          let! n = tryReadInt()
+          let! m = tryReadInt()
+          return n * m
+
+  If any of the `tryReadInt` returns `None`, the whole expression is `None`.
+
+* Creating a `log` computation expression:
+
+      type Logging<'T> =
+          | Log of 'T * list<string>    // holds a value and messages
+
+      type LoggingBuilder() =
+          member x.Bind (Log (v, logs1), f) =
+              let (Log (newV, logs2)) = f v
+              Log (newV, logs1 @ logs2)
+          member x.Return()v = Log (v, [])
+          member x.Zero() = Log((), [])   // computation doesn't return a value
+
+      let logMessage(s) = Log((), [s])    // allows creation of just a message
+
+      let log = new LoggingBuilder()
+
+* Example using `log` computation:
+
+      // Write a message to the console (and log it)
+      let write(s) = log {
+          do! logMessage("writing: " + s)
+          Console.Write(s) }
+
+      // Read a string from the console (and log it)
+      let read() = log {
+          do! logMessage("reading")
+          return Console.ReadLine() }
+
+      // Use above functions to ask user for a name (and log process)
+      let testIt() = log {
+          do! logMessage("starting")
+          do! write("Enter name: ")
+          let! name = read()
+          return "Hello " + name + "!" }
+
+  In the example, `do!` is like a `let!` but it ignores the result (`unit`).
+  Also, F# automatically uses the `Zero` member defined above when a function
+  doesn't return anything (e.g., in the `write` function).
+
+* It's possible to create a computation expression for lazyness,
+  but the `Bind` function is tricky.
