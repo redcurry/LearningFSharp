@@ -926,3 +926,58 @@
 
 * It's possible to create a computation expression for lazyness,
   but the `Bind` function is tricky.
+
+## Chapter 13
+
+* The combination of `let!` followed by `use` (in order to despose of the
+  obtained value) can be replaced with a single `use!`:
+
+      use! response = request.AsyncGetResponse()
+
+* Similarly, the combination of `let!` followed by `return` can be replaced
+  with a single `return!`.
+
+* Example code to download a website:
+
+      open System.IO
+      open System.Net
+
+      let downloadUrl(url:string) = async {
+          let request = HttpWebRequest.Create(url)
+          use! response = request.AsyncGetResponse()
+          let stream = response.GetResponseStream()
+          use reader = new StreamReader(stream)
+          return! reader.ReadToEndAsync() |> Async.AwaitTask }
+
+      // Create a list of tasks to be executed in parallel
+      let tasks =
+          [ downloadUrl("http://www.tomasp.net")
+            downloadUrl("http://www.manning.com") ]
+
+      // Create a single async workflow to rut the above tasks in parallel
+      let all = Async.Parallel(tasks)
+
+      // Execute the tasks in parallel
+      Async.RunSynchronously(all)
+
+* If a .NET operation provides methods like `BeginOperation` and
+  `EndOperation`, you can turn it into an asynchronous workflow
+  by using `Async.FromBeginEnd` and pass those methods as arguments.
+
+* Example implementation of `Sleep` that doesn't block the thread:
+
+      let Sleep(time) =
+          Async.FromContinuations(fun (cont, econt, ccont) ->
+              let t = new System.Timers.Timer(time, AutoReset = false)
+              t.Elapsed.Add(fun _ -> cont())
+              t.Start())
+
+  Call `cont` when the operation is successful (in this case, creating a
+  timer). Call `econt` when the operation throws an exception. `ccont` is
+  related to cancellation (but it's not clear if it's supposed to be called).
+
+* `try`/`with` can be used normally inside an asynchronous workflow
+  (thanks to special functions that tell F# how to deal with exceptions).
+
+* F# allows implicit conversion to a base class or interface when passing
+  objects as input arguments to a function or method.
