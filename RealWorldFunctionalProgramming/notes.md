@@ -979,5 +979,25 @@
 * `try`/`with` can be used normally inside an asynchronous workflow
   (thanks to special functions that tell F# how to deal with exceptions).
 
+* `try`/`with` can also have a `when` with a condition:
+
+      try
+          return! downloadUrl(url)
+      with _ when attempts > 0 ->
+          printfn "Failed"
+
 * F# allows implicit conversion to a base class or interface when passing
   objects as input arguments to a function or method.
+
+### Units of Measure
+
+* Define units of measure:
+
+      [<Measure>] type km
+      [<Measure>] type h
+
+* Examples:
+
+      let length = 9.0<km>          // type: float<km>
+      let area = length * length    // type: float<km^2>
+      let d = 10.0<km/h> * 2.0<h>   // type: float<km>
