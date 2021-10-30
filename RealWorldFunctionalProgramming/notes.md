@@ -1001,3 +1001,64 @@
       let length = 9.0<km>          // type: float<km>
       let area = length * length    // type: float<km^2>
       let d = 10.0<km/h> * 2.0<h>   // type: float<km>
+
+## Chapter 14
+
+* In C#, run a for loop in parallel:
+
+      Parallel.For(i, input.Length - 1, i => {
+          var sum = input[i - 1] + input[i] + input[i + 1];
+          result[i] = sum / 3;
+      });
+
+* In F#, run a for loop in parallel:
+
+      // First, wrap Parallel.For to simplify
+      let pfor nfrom nto f =
+          Parallel.For(nfrom, nto + 1, Action<_>(f)) |> ignore
+
+      pfor 1 (input.Length - 2) (fun i ->
+          let sum = input.[i - 1] + input.[i] + input.[i + 1];
+          result.[i] <- sum / 3
+      }
+
+  It is OK that the code is imperative and not immutable, as long as
+  the result does not depend on another iteration of the loop.
+
+* In C#, use `AsParallel()` to perform LINQ operation in parallel:
+
+      var primeCount =
+          nums.AsParallel()
+              .Where(IsPrime)
+              .Count();
+
+* In F#, use `PSeq` (available in `FSharp.Collections.ParallelSeq`):
+
+      let primeCount =
+          nums |> PSeq.filter isPrime
+               |> PSeq.length
+
+  Or use the `pseq` expression (but may not exist in above library):
+
+      pseq {
+          for n in nums do
+              if (isPrime n) then
+                  yield n }
+          |> PSeq.length
+
+  `pseq` is written by implementing the `For`, `Yield`, and `Combine` members
+  (in addition to `Bind` and `Return`) of the class that allows one
+  to create computation expressions.
+
+* Data-based parallelism performs the same task on different inputs
+  in parallel. Task-based parallelism perfroms (possibly different)
+  tasks concurrently.
+
+* Task-based parallelism can be used in C# and F# with `Task.Factory.StartNew`,
+  which starts the given lambda immediately and returns a `Task`.
+  The result can be accessed with the `Result` property of the `Task` object,
+  which blocks the thread until the task is completed.
+
+## Miscellaneous
+
+* F# interactive can be access via the command-line with `dotnet fsi`.
